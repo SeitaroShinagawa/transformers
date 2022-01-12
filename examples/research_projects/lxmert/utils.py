@@ -542,16 +542,20 @@ def get_demo_path():
     print(f"{os.path.abspath(os.path.join(PATH, os.pardir))}/demo.ipynb")
 
 
-def img_tensorize(im, input_format="RGB"):
+def img_tensorize(im, input_format="RGB"): #LXMERT format (frcnn_cfg.INPUT.format) is "BGR"
     assert isinstance(im, str)
     if os.path.isfile(im):
-        img = cv2.imread(im)
+        img = cv2.imread(im) #BGR
+        if input_format == "RGB":
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) #RGB
     else:
-        img = get_image_from_url(im)
+        img = get_image_from_url(im) #RGB
+        if input_format == "BGR":
+            img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
         assert img is not None, f"could not connect to: {im}"
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    if input_format == "RGB":
-        img = img[:, :, ::-1]
+    #img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) #RGB
+    #if input_format == "RGB":
+    #    img = img[:, :, ::-1] #flip R and B
     return img
 
 

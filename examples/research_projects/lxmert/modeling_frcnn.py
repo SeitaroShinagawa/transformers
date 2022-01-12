@@ -38,8 +38,20 @@ def norm_box(boxes, raw_sizes):
         normalized_boxes = boxes.copy()
     else:
         normalized_boxes = boxes.clone()
-    normalized_boxes[:, :, (0, 2)] /= raw_sizes[:, 1]
-    normalized_boxes[:, :, (1, 3)] /= raw_sizes[:, 0]
+
+    print(normalized_boxes.shape, raw_sizes.shape)
+    n_box = normalized_boxes.shape[1]
+    N,W = raw_sizes.shape
+    raw_sizes = raw_sizes.unsqueeze(1)
+    raw_sizes = torch.broadcast_to(raw_sizes, (N, n_box, W))
+    
+    #normalized_boxes[:, :, (0, 2)] /= raw_sizes[:, 1] #N x Boxes x Position , N  
+    #normalized_boxes[:, :, (1, 3)] /= raw_sizes[:, 0]
+
+    normalized_boxes[:, :, 0] /= raw_sizes[:, :, 1]
+    normalized_boxes[:, :, 1] /= raw_sizes[:, :, 0]
+    normalized_boxes[:, :, 2] /= raw_sizes[:, :, 1]
+    normalized_boxes[:, :, 3] /= raw_sizes[:, :, 0]   
     return normalized_boxes
 
 
